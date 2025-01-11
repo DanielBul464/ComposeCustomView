@@ -19,18 +19,23 @@ class MainViewModel : ViewModel() {
     private val _state = MutableStateFlow<MainScreenState>(MainScreenState.Initial)
     val state = _state.asStateFlow()
 
+    private var lastState: MainScreenState = MainScreenState.Initial
+
     private val exceptionHandler = CoroutineExceptionHandler { _, throwable ->
         Log.d("MainViewModel", "Exception caught: $throwable")
+        _state.value = lastState
     }
 
     init {
         loadBarList()
     }
 
-    fun loadBarList() {
+    fun loadBarList(timeFrame: TimeFrame = TimeFrame.HOUR_1) {
+        lastState = _state.value
+        _state.value = MainScreenState.Loading
         viewModelScope.launch(context = exceptionHandler + Dispatchers.IO) {
-            val barList = apiService.loadBars().barList
-            _state.value = MainScreenState.Content(barList)
+            val barList = apiService.loadBars(timeFrame.apiRequestTimeValue).barList
+            _state.value = MainScreenState.Content(barList, timeFrame)
         }
     }
 
