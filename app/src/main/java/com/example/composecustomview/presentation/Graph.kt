@@ -49,7 +49,6 @@ import java.util.Calendar
 import java.util.Locale
 import kotlin.math.roundToInt
 
-private const val MIN_VISIBLE_BARS_COUNT = 20
 
 @Composable
 fun Graph(
@@ -132,7 +131,7 @@ private fun Chart(
     val transformableState = rememberTransformableState { zoomChange, panChange, _ ->
         val visibleBarsCount = (currentState.visibleBarsCount / zoomChange)
             .roundToInt()
-            .coerceIn(MIN_VISIBLE_BARS_COUNT, currentState.barList.size)
+            .coerceIn(0, currentState.barList.size)
         val scrolledBy = (currentState.scrolledBy + panChange.x)
             .coerceAtLeast(0f)
             .coerceAtMost(currentState.barList.size * currentState.barWidth - currentState.graphWidth)
